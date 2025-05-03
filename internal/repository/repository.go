@@ -92,6 +92,9 @@ func (r *repository) GetOrders(login string) ([]models.Order, error) {
 
 		orders = append(orders, order)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 	return orders, nil
 }
 
@@ -182,6 +185,9 @@ func (r *repository) GetWithdrawals(login string) ([]Withdrawal, error) {
 		w.ProcessedAt = createdAt.Format(time.RFC3339)
 		withdrawals = append(withdrawals, w)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 	return withdrawals, nil
 }
 
@@ -203,6 +209,9 @@ func (r *repository) GetPendingOrders(ctx context.Context) ([]models.Order, erro
 			return nil, err
 		}
 		orders = append(orders, o)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 	return orders, nil
 }

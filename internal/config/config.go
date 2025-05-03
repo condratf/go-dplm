@@ -14,8 +14,8 @@ type config struct {
 var Config = config{
 	RunAddress:           "localhost:8080",
 	AccrualSystemAddress: "http://accrual-system",
-	DatabaseURI:          "postgres://user:password@localhost/dbname?sslmode=disable",
-	// DatabaseURI:          "",
+	DatabaseURI:          "",
+	// DatabaseURI:          "postgres://user:password@localhost/dbname?sslmode=disable",
 }
 
 func InitConfig() {
