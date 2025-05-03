@@ -25,6 +25,7 @@ CREATE TABLE user_balance (
 
 CREATE TABLE withdrawals (
   id SERIAL PRIMARY KEY,
+  order_number VARCHAR(50),
   user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   amount INT NOT NULL,
   -- withdrawn

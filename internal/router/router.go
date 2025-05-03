@@ -19,7 +19,7 @@ func Router(
 ) http.Handler {
 	r := chi.NewRouter()
 
-	app := App{
+	appRouter := AppRouter{
 		db:           db,
 		config:       cnf,
 		sessionStore: store,
@@ -29,14 +29,14 @@ func Router(
 
 	r.Use(middleware.Logger)
 
-	r.Post("/api/user/register", app.registerUserHandler)
-	r.Post("/api/user/login", app.loginUserHandler)
-	r.Post("/api/user/logout", app.authMiddleware(app.logoutUserHandler))
-	r.Post("/api/user/orders", app.authMiddleware(app.uploadOrderHandler))
-	r.Get("/api/user/orders", app.authMiddleware(app.getOrdersHandler))
-	r.Get("/api/user/balance", app.authMiddleware(app.getBalanceHandler))
-	r.Post("/api/user/balance/withdraw", app.authMiddleware(app.withdrawHandler))
-	r.Get("/api/user/withdrawals", app.authMiddleware(app.getWithdrawalsHandler))
+	r.Post("/api/user/register", appRouter.registerUserHandler)
+	r.Post("/api/user/login", appRouter.loginUserHandler)
+	r.Post("/api/user/logout", appRouter.authMiddleware(appRouter.logoutUserHandler))
+	r.Post("/api/user/orders", appRouter.authMiddleware(appRouter.uploadOrderHandler))
+	r.Get("/api/user/orders", appRouter.authMiddleware(appRouter.getOrdersHandler))
+	r.Get("/api/user/balance", appRouter.authMiddleware(appRouter.getBalanceHandler))
+	r.Post("/api/user/balance/withdraw", appRouter.authMiddleware(appRouter.withdrawHandler))
+	r.Get("/api/user/withdrawals", appRouter.authMiddleware(appRouter.getWithdrawalsHandler))
 
 	return r
 }

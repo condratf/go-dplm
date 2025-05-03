@@ -13,7 +13,7 @@ type Config struct {
 	AccrualSystemAddress string
 }
 
-type App struct {
+type AppRouter struct {
 	db           *sql.DB
 	sessionStore *sessions.CookieStore
 	userRepo     repository.UserRepository
