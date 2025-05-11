@@ -1,25 +1,11 @@
-package repository
+package userrepo
 
 import (
 	"database/sql"
-	"errors"
 
+	"github.com/condratf/go-musthave-diploma-tpl/internal/errors_custom"
 	"github.com/lib/pq"
 )
-
-var ErrUserExists = errors.New("user already exists")
-var ErrUserNotFound = errors.New("user not found")
-
-type UserRepository interface {
-	CreateUser(login, password string) error
-	GetUserPassword(login string) (string, error)
-	GetUserBalance(login string) (int, error)
-	UpdateUserBalance(login string, amount int) error
-}
-
-type userRepository struct {
-	db *sql.DB
-}
 
 func NewUserRepository(db *sql.DB) UserRepository {
 	return &userRepository{db: db}
@@ -29,7 +15,7 @@ func (r *userRepository) CreateUser(login, password string) error {
 	_, err := r.db.Exec("INSERT INTO users (login, password) VALUES ($1, $2)", login, password)
 	if err != nil {
 		if pqErr, ok := err.(*pq.Error); ok && pqErr.Code == "23505" {
-			return ErrUserExists
+			return errors_custom.ErrUserExists
 		}
 		return err
 	}
@@ -41,7 +27,7 @@ func (r *userRepository) GetUserPassword(login string) (string, error) {
 	err := r.db.QueryRow("SELECT password FROM users WHERE login = $1", login).Scan(&password)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return "", ErrUserNotFound
+			return "", errors_custom.ErrUserNotFound
 		}
 		return "", err
 	}

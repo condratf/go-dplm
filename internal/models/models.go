@@ -30,3 +30,20 @@ type Withdrawal struct {
 	Amount    int    `json:"amount"`
 	CreatedAt string `json:"created_at"`
 }
+
+type BalanceResponse struct {
+	Current   float64 `json:"current"`
+	Withdrawn float64 `json:"withdrawn"`
+}
+
+type WithdrawalRes struct {
+	Order       string  `json:"order"`
+	Sum         float64 `json:"sum"`
+	ProcessedAt string  `json:"processed_at"`
+}
+
+type AccrualResponse struct {
+	Order   string
+	Status  string
+	Accrual float64
+}

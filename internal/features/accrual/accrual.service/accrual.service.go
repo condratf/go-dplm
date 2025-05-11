@@ -1,20 +1,16 @@
-package accrual
+package accrualservice
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/condratf/go-musthave-diploma-tpl/internal/models"
 )
 
 type AccrualService interface {
-	GetOrderInfo(ctx context.Context, orderNumber string) (*AccrualResponse, error)
-}
-
-type AccrualResponse struct {
-	Order   string
-	Status  string
-	Accrual float64
+	GetOrderInfo(ctx context.Context, orderNumber string) (*models.AccrualResponse, error)
 }
 
 type accrualClient struct {
@@ -29,7 +25,7 @@ func NewAccrualClient(baseURL string, client *http.Client) AccrualService {
 	}
 }
 
-func (a *accrualClient) GetOrderInfo(ctx context.Context, orderNumber string) (*AccrualResponse, error) {
+func (a *accrualClient) GetOrderInfo(ctx context.Context, orderNumber string) (*models.AccrualResponse, error) {
 	req, err := http.NewRequestWithContext(ctx, "GET", fmt.Sprintf("%s/api/orders/%s", a.baseURL, orderNumber), nil)
 	if err != nil {
 		return nil, err
@@ -43,7 +39,7 @@ func (a *accrualClient) GetOrderInfo(ctx context.Context, orderNumber string) (*
 
 	switch resp.StatusCode {
 	case http.StatusOK:
-		var result AccrualResponse
+		var result models.AccrualResponse
 		if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 			return nil, err
 		}
