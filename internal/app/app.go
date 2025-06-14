@@ -37,6 +37,8 @@ func RunApp(
 	db *sql.DB,
 	ctx context.Context,
 ) error {
+	accrualService := accrual_service.NewAccrualClient(cnf.AccrualSystemAddress, &http.Client{Timeout: 11 * time.Second})
+
 	orderRepo := order_repo.NewOrderRepository(db)
 	userRepo := user_repo.NewUserRepository(db)
 	withdrawRepo := withdraw_repo.NewWithdrawRepository(db)
@@ -45,26 +47,25 @@ func RunApp(
 	orderService := order_service.NewOrderService(orderRepo)
 	withdrawService := withdraw_service.NewWithdrawService(withdrawRepo)
 
-	accrualService := accrual_service.NewAccrualClient(cnf.AccrualSystemAddress, &http.Client{Timeout: 11 * time.Second})
 	updater := order_updater.NewOrderUpdater(orderService, accrualService)
 	updater.StartOrderUpdater(ctx, 10*time.Second)
 
 	sessionsStore := sessions.NewCookieStore([]byte(secretKey))
 
 	userRouter := user_router.NewUserRouter(sessionsStore, userService)
-	orderRouter := order_router.NewOrderRouter(userRouter.CheckSession, orderService)
+	orderRouter := order_router.NewOrderRouter(userRouter.CheckSession, orderService, accrualService)
 	withdrawRouter := withdraw_router.NewWithdrawRouter(userRouter.CheckSession, withdrawService)
 
 	r := chi.NewRouter()
 
+	r.Get("/api/user/orders", utils.AuthMiddleware(sessionsStore, orderRouter.GetOrdersHandler))
+	r.Get("/api/user/balance", utils.AuthMiddleware(sessionsStore, orderRouter.GetBalanceHandler))
+	r.Get("/api/user/withdrawals", utils.AuthMiddleware(sessionsStore, withdrawRouter.GetWithdrawalsHandler))
 	r.Post("/api/user/register", userRouter.RegisterUserHandler)
 	r.Post("/api/user/login", userRouter.LoginUserHandler)
 	r.Post("/api/user/logout", utils.AuthMiddleware(sessionsStore, userRouter.LogoutUserHandler))
 	r.Post("/api/user/orders", utils.AuthMiddleware(sessionsStore, orderRouter.UploadOrderHandler))
-	r.Get("/api/user/orders", utils.AuthMiddleware(sessionsStore, orderRouter.GetOrdersHandler))
-	r.Get("/api/user/balance", utils.AuthMiddleware(sessionsStore, orderRouter.GetBalanceHandler))
 	r.Post("/api/user/balance/withdraw", utils.AuthMiddleware(sessionsStore, withdrawRouter.WithdrawHandler))
-	r.Get("/api/user/withdrawals", utils.AuthMiddleware(sessionsStore, withdrawRouter.GetWithdrawalsHandler))
 
 	fmt.Println("Starting server on", config.Config.RunAddress)
 	return http.ListenAndServe(config.Config.RunAddress, r)

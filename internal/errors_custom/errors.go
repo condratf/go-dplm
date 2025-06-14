@@ -12,5 +12,5 @@ var (
 	ErrUserExists   = errors.New("user already exists")
 	ErrUserNotFound = errors.New("user not found")
 
-	ErrInvalidOrderNumber = errors.New("Invalid order number format")
+	ErrInvalidOrderNumber = errors.New("invalid order number format")
 )

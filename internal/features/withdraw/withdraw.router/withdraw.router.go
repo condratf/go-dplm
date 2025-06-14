@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/condratf/go-musthave-diploma-tpl/internal/errors_custom"
-	"github.com/condratf/go-musthave-diploma-tpl/internal/utils"
 )
 
 func NewWithdrawRouter(
@@ -35,13 +34,10 @@ func (router *withdrawRouter) WithdrawHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	if !utils.IsValidLuhn(req.Order) {
-		http.Error(w, "Invalid order number", http.StatusUnprocessableEntity)
-		return
-	}
-
 	err := router.withdrawService.Withdraw(login, req.Order, req.Sum)
 	switch {
+	case errors.Is(err, errors_custom.ErrInvalidOrderNumber):
+		http.Error(w, "Invalid order number", http.StatusUnprocessableEntity)
 	case errors.Is(err, errors_custom.ErrInsufficientFunds):
 		http.Error(w, "Not enough funds", http.StatusPaymentRequired)
 	case err != nil:
@@ -50,6 +46,7 @@ func (router *withdrawRouter) WithdrawHandler(w http.ResponseWriter, r *http.Req
 		w.WriteHeader(http.StatusOK)
 	}
 }
+
 func (router *withdrawRouter) GetWithdrawalsHandler(w http.ResponseWriter, r *http.Request) {
 	login, ok := router.checkSession(r)
 	if !ok || login == "" {

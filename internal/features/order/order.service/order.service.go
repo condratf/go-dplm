@@ -53,7 +53,7 @@ func (o *orderService) GetPendingOrders(ctx context.Context) ([]models.Order, er
 	}
 
 	if len(orders) == 0 {
-		return nil, errors_custom.ErrNoContent
+		return []models.Order{}, nil
 	}
 
 	return orders, nil

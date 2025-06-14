@@ -18,10 +18,10 @@ func NewOrderRepository(db *sql.DB) OrderRepository {
 
 func (r *orderRepository) UploadOrder(login, order string) error {
 	var existingLogin string
-	err := r.db.QueryRow("SELECT user_login FROM orders WHERE order = $1", order).Scan(&existingLogin)
+	err := r.db.QueryRow("SELECT user_login FROM orders WHERE order_number = $1", order).Scan(&existingLogin)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			_, err = r.db.Exec("INSERT INTO orders (login, order) VALUES ($1, $2)", login, order)
+			_, err = r.db.Exec("INSERT INTO orders (user_login, order_number) VALUES ($1, $2)", login, order)
 			if err != nil {
 				return err
 			}
@@ -37,7 +37,7 @@ func (r *orderRepository) UploadOrder(login, order string) error {
 
 func (r *orderRepository) GetOrders(login string) ([]models.Order, error) {
 	rows, err := r.db.Query(`
-			SELECT order, status, loyalty_points, created_at 
+			SELECT order_number, status, loyalty_points, created_at 
 			FROM orders 
 			WHERE user_login = $1 
 			ORDER BY created_at DESC; 
@@ -73,9 +73,10 @@ func (r *orderRepository) GetOrders(login string) ([]models.Order, error) {
 
 func (r *orderRepository) GetPendingOrders(ctx context.Context) ([]models.Order, error) {
 	rows, err := r.db.QueryContext(ctx, `
-			SELECT order FROM orders
-			WHERE status IN ('REGISTERED', 'PROCESSING')
-			ORDER BY created_at LIMIT 100
+			SELECT order_number 
+			FROM orders
+			WHERE status IN ('pending', 'PENDING')
+			ORDER BY created_at LIMIT 100;
 	`)
 	if err != nil {
 		return nil, err
@@ -100,7 +101,7 @@ func (r *orderRepository) UpdateOrderStatus(ctx context.Context, orderNumber, st
 	_, err := r.db.ExecContext(ctx, `
 			UPDATE orders 
 			SET status = $1, loyalty_points = $2 
-			WHERE order = $3
+			WHERE order_number = $3
 	`, status, accrual, orderNumber)
 	return err
 }

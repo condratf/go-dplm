@@ -1,6 +1,7 @@
 package orderrouter
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/condratf/go-musthave-diploma-tpl/internal/models"
@@ -18,7 +19,12 @@ type orderService interface {
 	GetBalance(login string) (*float64, error)
 }
 
+type accrualService interface {
+	RegisterOrder(ctx context.Context, orderNumber string) error
+}
+
 type orderRouter struct {
-	checkSession func(r *http.Request) (string, bool)
-	orderService orderService
+	checkSession   func(r *http.Request) (string, bool)
+	orderService   orderService
+	accrualService accrualService
 }

@@ -3,7 +3,7 @@ package userrepo
 import "database/sql"
 
 type UserRepository interface {
-	CreateUser(login, password string) error
+	CreateUser(login, password, email string) error
 	GetUserPassword(login string) (string, error)
 	GetUserBalance(login string) (int, error)
 	UpdateUserBalance(login string, amount int) error

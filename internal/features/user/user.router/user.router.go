@@ -39,12 +39,13 @@ func (u *userRouter) RegisterUserHandler(w http.ResponseWriter, r *http.Request)
 	var req struct {
 		Login    string `json:"login"`
 		Password string `json:"password"`
+		Email    string `json:"email"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
-	err := u.userService.RegisterUser(req.Login, req.Password)
+	err := u.userService.RegisterUser(req.Login, req.Password, req.Email)
 	if err == errors_custom.ErrUserExists {
 		http.Error(w, "Login already exists", http.StatusConflict)
 		return

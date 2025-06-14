@@ -13,12 +13,12 @@ func NewUserService(
 	}
 }
 
-func (s *userService) RegisterUser(login, password string) error {
+func (s *userService) RegisterUser(login, password, email string) error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
-	err = s.userRepo.CreateUser(login, string(hashedPassword))
+	err = s.userRepo.CreateUser(login, string(hashedPassword), email)
 	if err != nil {
 		return err
 	}

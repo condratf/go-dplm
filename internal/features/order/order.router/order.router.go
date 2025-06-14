@@ -1,6 +1,7 @@
 package orderrouter
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"io"
@@ -13,10 +14,12 @@ import (
 func NewOrderRouter(
 	checkSession func(r *http.Request) (string, bool),
 	orderService orderService,
+	accrualService accrualService,
 ) OrderRouter {
 	return &orderRouter{
-		checkSession: checkSession,
-		orderService: orderService,
+		checkSession:   checkSession,
+		orderService:   orderService,
+		accrualService: accrualService,
 	}
 }
 
@@ -48,8 +51,16 @@ func (o *orderRouter) UploadOrderHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	err = o.accrualService.RegisterOrder(context.TODO(), order)
+
+	if err != nil {
+		http.Error(w, "Error uploading order", http.StatusInternalServerError)
+		return
+	}
+
 	w.WriteHeader(http.StatusAccepted)
 }
+
 func (o *orderRouter) GetOrdersHandler(w http.ResponseWriter, r *http.Request) {
 	login, ok := o.checkSession(r)
 	if !ok || login == "" {

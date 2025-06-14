@@ -11,8 +11,8 @@ func NewUserRepository(db *sql.DB) UserRepository {
 	return &userRepository{db: db}
 }
 
-func (r *userRepository) CreateUser(login, password string) error {
-	_, err := r.db.Exec("INSERT INTO users (login, password) VALUES ($1, $2)", login, password)
+func (r *userRepository) CreateUser(login, password, email string) error {
+	_, err := r.db.Exec("INSERT INTO users (login, password, email) VALUES ($1, $2, $3)", login, password, email)
 	if err != nil {
 		if pqErr, ok := err.(*pq.Error); ok && pqErr.Code == "23505" {
 			return errors_custom.ErrUserExists

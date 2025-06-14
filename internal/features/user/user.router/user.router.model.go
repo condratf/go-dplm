@@ -7,7 +7,7 @@ import (
 )
 
 type userService interface {
-	RegisterUser(login, password string) error
+	RegisterUser(login, password, email string) error
 	LoginUser(login, password string) error
 }
 
