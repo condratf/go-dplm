@@ -13,9 +13,10 @@ type config struct {
 
 var Config = config{
 	RunAddress:           "localhost:8000",
-	AccrualSystemAddress: "http://localhost:8080",
-	// DatabaseURI:          "",
-	DatabaseURI: "postgres://user:password@localhost/gophermart?sslmode=disable",
+	AccrualSystemAddress: "",
+	DatabaseURI:          "",
+	// AccrualSystemAddress: "http://localhost:8080",
+	// DatabaseURI: "postgres://user:password@localhost/gophermart?sslmode=disable",
 }
 
 func InitConfig() {

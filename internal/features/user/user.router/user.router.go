@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/condratf/go-musthave-diploma-tpl/internal/errors_custom"
+	"github.com/condratf/go-musthave-diploma-tpl/internal/custerrors"
 	"github.com/gorilla/sessions"
 )
 
@@ -46,7 +46,7 @@ func (u *userRouter) RegisterUserHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	err := u.userService.RegisterUser(req.Login, req.Password, req.Email)
-	if err == errors_custom.ErrUserExists {
+	if err == custerrors.ErrUserExists {
 		http.Error(w, "Login already exists", http.StatusConflict)
 		return
 	} else if err != nil {
@@ -67,7 +67,7 @@ func (u *userRouter) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err := u.userService.LoginUser(req.Login, req.Password)
-	if err == errors_custom.ErrInvalidAuth {
+	if err == custerrors.ErrInvalidAuth {
 		http.Error(w, "Invalid login or password", http.StatusUnauthorized)
 		return
 	} else if err != nil {

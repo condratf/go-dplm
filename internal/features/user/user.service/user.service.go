@@ -1,7 +1,7 @@
 package userservice
 
 import (
-	"github.com/condratf/go-musthave-diploma-tpl/internal/errors_custom"
+	"github.com/condratf/go-musthave-diploma-tpl/internal/custerrors"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -31,7 +31,7 @@ func (s *userService) LoginUser(login, password string) error {
 		return err
 	}
 	if bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)) != nil {
-		return errors_custom.ErrInvalidAuth
+		return custerrors.ErrInvalidAuth
 	}
 
 	return nil

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/condratf/go-musthave-diploma-tpl/internal/errors_custom"
+	"github.com/condratf/go-musthave-diploma-tpl/internal/custerrors"
 )
 
 func NewWithdrawRouter(
@@ -36,9 +36,9 @@ func (router *withdrawRouter) WithdrawHandler(w http.ResponseWriter, r *http.Req
 
 	err := router.withdrawService.Withdraw(login, req.Order, req.Sum)
 	switch {
-	case errors.Is(err, errors_custom.ErrInvalidOrderNumber):
+	case errors.Is(err, custerrors.ErrInvalidOrderNumber):
 		http.Error(w, "Invalid order number", http.StatusUnprocessableEntity)
-	case errors.Is(err, errors_custom.ErrInsufficientFunds):
+	case errors.Is(err, custerrors.ErrInsufficientFunds):
 		http.Error(w, "Not enough funds", http.StatusPaymentRequired)
 	case err != nil:
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
@@ -56,7 +56,7 @@ func (router *withdrawRouter) GetWithdrawalsHandler(w http.ResponseWriter, r *ht
 
 	withdrawals, err := router.withdrawService.GetWithdrawals(login)
 	if err != nil {
-		if errors.Is(err, errors_custom.ErrNoContent) {
+		if errors.Is(err, custerrors.ErrNoContent) {
 			w.WriteHeader(http.StatusNoContent)
 			return
 		}

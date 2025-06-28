@@ -3,7 +3,7 @@ package userrepo
 import (
 	"database/sql"
 
-	"github.com/condratf/go-musthave-diploma-tpl/internal/errors_custom"
+	"github.com/condratf/go-musthave-diploma-tpl/internal/custerrors"
 	"github.com/lib/pq"
 )
 
@@ -15,7 +15,7 @@ func (r *userRepository) CreateUser(login, password, email string) error {
 	_, err := r.db.Exec("INSERT INTO users (login, password, email) VALUES ($1, $2, $3)", login, password, email)
 	if err != nil {
 		if pqErr, ok := err.(*pq.Error); ok && pqErr.Code == "23505" {
-			return errors_custom.ErrUserExists
+			return custerrors.ErrUserExists
 		}
 		return err
 	}
@@ -27,7 +27,7 @@ func (r *userRepository) GetUserPassword(login string) (string, error) {
 	err := r.db.QueryRow("SELECT password FROM users WHERE login = $1", login).Scan(&password)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return "", errors_custom.ErrUserNotFound
+			return "", custerrors.ErrUserNotFound
 		}
 		return "", err
 	}

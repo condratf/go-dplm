@@ -6,7 +6,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/condratf/go-musthave-diploma-tpl/internal/errors_custom"
+	"github.com/condratf/go-musthave-diploma-tpl/internal/custerrors"
 	"github.com/condratf/go-musthave-diploma-tpl/internal/models"
 )
 
@@ -30,9 +30,9 @@ func (r *orderRepository) UploadOrder(login, order string) error {
 		return err
 	}
 	if existingLogin == login {
-		return errors_custom.ErrOrderAlreadyUploadedBySameUser
+		return custerrors.ErrOrderAlreadyUploadedBySameUser
 	}
-	return errors_custom.ErrOrderAlreadyUploadedByAnotherUser
+	return custerrors.ErrOrderAlreadyUploadedByAnotherUser
 }
 
 func (r *orderRepository) GetOrders(login string) ([]models.Order, error) {

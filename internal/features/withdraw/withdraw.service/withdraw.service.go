@@ -1,7 +1,7 @@
 package withdrawservice
 
 import (
-	"github.com/condratf/go-musthave-diploma-tpl/internal/errors_custom"
+	"github.com/condratf/go-musthave-diploma-tpl/internal/custerrors"
 	"github.com/condratf/go-musthave-diploma-tpl/internal/models"
 	"github.com/condratf/go-musthave-diploma-tpl/internal/utils"
 )
@@ -16,7 +16,7 @@ func NewWithdrawService(
 
 func (w *withdrawService) Withdraw(login string, order string, amount float64) error {
 	if !utils.IsValidLuhn(order) {
-		return errors_custom.ErrInvalidOrderNumber
+		return custerrors.ErrInvalidOrderNumber
 	}
 	err := w.withdrawRepo.Withdraw(login, order, amount)
 	return err
@@ -29,7 +29,7 @@ func (w *withdrawService) GetWithdrawals(login string) ([]models.WithdrawalRes, 
 	}
 
 	if len(withdrawals) == 0 {
-		return nil, errors_custom.ErrNoContent
+		return nil, custerrors.ErrNoContent
 	}
 
 	return withdrawals, nil

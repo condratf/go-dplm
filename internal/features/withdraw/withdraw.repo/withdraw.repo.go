@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/condratf/go-musthave-diploma-tpl/internal/errors_custom"
+	"github.com/condratf/go-musthave-diploma-tpl/internal/custerrors"
 	"github.com/condratf/go-musthave-diploma-tpl/internal/models"
 )
 
@@ -37,7 +37,7 @@ func (r *withdrawRepository) Withdraw(login, order string, amount float64) error
 	}
 
 	if available < amount {
-		return errors_custom.ErrInsufficientFunds
+		return custerrors.ErrInsufficientFunds
 	}
 
 	_, err = tx.Exec(`

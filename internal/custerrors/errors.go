@@ -1,4 +1,4 @@
-package errors_custom
+package custerrors
 
 import "errors"
 

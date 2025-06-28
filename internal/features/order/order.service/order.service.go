@@ -4,7 +4,7 @@ import (
 	"context"
 	"regexp"
 
-	"github.com/condratf/go-musthave-diploma-tpl/internal/errors_custom"
+	"github.com/condratf/go-musthave-diploma-tpl/internal/custerrors"
 	"github.com/condratf/go-musthave-diploma-tpl/internal/models"
 	"github.com/condratf/go-musthave-diploma-tpl/internal/utils"
 )
@@ -19,11 +19,11 @@ func NewOrderService(
 
 func (o *orderService) UploadOrder(login, order string) error {
 	if !regexp.MustCompile(`^\d+$`).MatchString(order) {
-		return errors_custom.ErrInvalidOrderNumber
+		return custerrors.ErrInvalidOrderNumber
 	}
 
 	if !utils.IsValidLuhn(order) {
-		return errors_custom.ErrInvalidOrderNumber
+		return custerrors.ErrInvalidOrderNumber
 	}
 
 	err := o.ordersRepo.UploadOrder(login, order)
@@ -40,7 +40,7 @@ func (o *orderService) GetOrders(login string) ([]models.Order, error) {
 	}
 
 	if len(orders) == 0 {
-		return nil, errors_custom.ErrNoContent
+		return nil, custerrors.ErrNoContent
 	}
 
 	return orders, nil
@@ -61,11 +61,11 @@ func (o *orderService) GetPendingOrders(ctx context.Context) ([]models.Order, er
 
 func (o *orderService) UpdateOrderStatus(ctx context.Context, orderNumber, status string, accrual float64) error {
 	if !regexp.MustCompile(`^\d+$`).MatchString(orderNumber) {
-		return errors_custom.ErrInvalidOrderNumber
+		return custerrors.ErrInvalidOrderNumber
 	}
 
 	if !utils.IsValidLuhn(orderNumber) {
-		return errors_custom.ErrInvalidOrderNumber
+		return custerrors.ErrInvalidOrderNumber
 	}
 
 	err := o.ordersRepo.UpdateOrderStatus(ctx, orderNumber, status, accrual)
@@ -82,7 +82,7 @@ func (o *orderService) GetBalance(login string) (*float64, error) {
 	}
 
 	if balance == nil {
-		return nil, errors_custom.ErrNoContent
+		return nil, custerrors.ErrNoContent
 	}
 
 	return &balance.Current, nil

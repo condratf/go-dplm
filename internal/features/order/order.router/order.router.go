@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/condratf/go-musthave-diploma-tpl/internal/errors_custom"
+	"github.com/condratf/go-musthave-diploma-tpl/internal/custerrors"
 )
 
 func NewOrderRouter(
@@ -39,11 +39,11 @@ func (o *orderRouter) UploadOrderHandler(w http.ResponseWriter, r *http.Request)
 
 	err = o.orderService.UploadOrder(login, order)
 	if err != nil {
-		if errors.Is(err, errors_custom.ErrOrderAlreadyUploadedBySameUser) {
+		if errors.Is(err, custerrors.ErrOrderAlreadyUploadedBySameUser) {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
-		if errors.Is(err, errors_custom.ErrOrderAlreadyUploadedByAnotherUser) {
+		if errors.Is(err, custerrors.ErrOrderAlreadyUploadedByAnotherUser) {
 			http.Error(w, "Order already uploaded by another user", http.StatusConflict)
 			return
 		}
@@ -51,12 +51,12 @@ func (o *orderRouter) UploadOrderHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	err = o.accrualService.RegisterOrder(context.TODO(), order)
+	_ = o.accrualService.RegisterOrder(context.TODO(), order)
 
-	if err != nil {
-		http.Error(w, "Error uploading order", http.StatusInternalServerError)
-		return
-	}
+	// if err != nil {
+	// 	http.Error(w, "Error uploading order", http.StatusInternalServerError)
+	// 	return
+	// }
 
 	w.WriteHeader(http.StatusAccepted)
 }
@@ -70,7 +70,7 @@ func (o *orderRouter) GetOrdersHandler(w http.ResponseWriter, r *http.Request) {
 
 	orders, err := o.orderService.GetOrders(login)
 	if err != nil {
-		if errors.Is(err, errors_custom.ErrNoContent) {
+		if errors.Is(err, custerrors.ErrNoContent) {
 			w.WriteHeader(http.StatusNoContent)
 			return
 		}
@@ -83,6 +83,7 @@ func (o *orderRouter) GetOrdersHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(orders)
 }
+
 func (o *orderRouter) GetBalanceHandler(w http.ResponseWriter, r *http.Request) {
 	login, ok := o.checkSession(r)
 	if !ok || login == "" {
